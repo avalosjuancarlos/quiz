@@ -16,9 +16,9 @@ exports.load = function(req, res, next, quizId){
 
 // GET /quizes
 exports.index = function(req, res){
-	if(req.query.search) {
-		var search = req.query.search.trim();
-		var searchQ = ("%" + search + "%").split(" ").join("%");
+	var search = req.query.search;
+	if( search && search !== "" ) {
+		var searchQ = ("%" + search.trim() + "%").split(" ").join("%");
 		
 		models.Quiz.findAll({where:["pregunta like ?", searchQ]}).then(function(quizes){
 			res.render('quizes/index.ejs', {quizes: quizes, search: search});
@@ -26,7 +26,7 @@ exports.index = function(req, res){
 	}
 	else {
 		models.Quiz.findAll().then(function(quizes){
-			res.render('quizes/index.ejs', {quizes: quizes, search: ""});
+			res.render('quizes/index.ejs', {quizes: quizes, search: search});
 		});
 	}
 };
