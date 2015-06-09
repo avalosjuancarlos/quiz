@@ -20,13 +20,13 @@ exports.index = function(req, res){
 	if( search && search !== "" ) {
 		var searchQ = ("%" + search.trim() + "%").split(" ").join("%");
 		
-		models.Quiz.findAll({where:["pregunta like ?", searchQ]}).then(function(quizes){
+		models.Quiz.findAll({where:["lower(pregunta) like lower(?)", searchQ]}).then(function(quizes){
 			res.render('quizes/index.ejs', {quizes: quizes, search: search});
 		});
 	}
 	else {
 		models.Quiz.findAll().then(function(quizes){
-			res.render('quizes/index.ejs', {quizes: quizes, search: search});
+			res.render('quizes/index.ejs', {quizes: quizes, search: ""});
 		});
 	}
 };
