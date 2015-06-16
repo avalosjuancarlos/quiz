@@ -21,12 +21,12 @@ exports.index = function(req, res){
 		var searchQ = ("%" + search.trim() + "%").split(" ").join("%");
 		
 		models.Quiz.findAll({where:["lower(pregunta) like lower(?)", searchQ], order:[['pregunta', 'ASC']]}).then(function(quizes){
-			res.render('quizes/index.ejs', {quizes: quizes, search: search});
+			res.render('quizes/index.ejs', {quizes: quizes, search: search, errors:[]});
 		});
 	}
 	else {
 		models.Quiz.findAll().then(function(quizes){
-			res.render('quizes/index.ejs', {quizes: quizes, search: ""});
+			res.render('quizes/index.ejs', {quizes: quizes, search: "", errors:[]});
 		});
 	}
 };
@@ -34,7 +34,7 @@ exports.index = function(req, res){
 // GET /quizes/:id
 exports.show = function(req, res){
 	models.Quiz.find(req.params.quizId).then(function(quiz){
-		res.render('quizes/show', {quiz: quiz});
+		res.render('quizes/show', {quiz: quiz, errors:[]});
 	});
 };
 
@@ -44,7 +44,7 @@ exports.answer = function(req, res){
 	if (req.query.respuesta === req.quiz.respuesta) {
 		resultado = 'Correcto';
 	}
-	res.render('quizes/answer', {quiz: req.quiz, respuesta: resultado});
+	res.render('quizes/answer', {quiz: req.quiz, respuesta: resultado, errors:[]});
 };
 
 // GET /quizes/new
@@ -53,15 +53,27 @@ exports.new = function(req, res){
 		{ pregunta: "Pregunta", respuesta: "Respuesta"}
 	);
 	
-	res.render('quizes/new', {quiz: quiz});
+	res.render('quizes/new', {quiz: quiz, errors:[]});
 };
 
 // POST /quizes/create
 exports.create = function(req, res){
 	var quiz = models.Quiz.build(req.body.quiz);
 	
-	// guarda en DB los campos pregunta y respuesta de quiz
-	quiz.save({fields: ["pregunta", "repuesta"]}).then(function(){
-		res.redirect('/quizes');
-	});	// Redirección HTTP (URL relativo) lista de preguntas
+	console.log("quiz:");
+	console.dir(quiz);
+	
+	quiz
+	.validate()
+	.then(function(err){
+		if(err){
+			res.render('quizes/new', {quiz: quiz, errors: err.errors});
+		} else {
+			quiz // save: guarda en DB campos pregunta y respuesta de quiz
+			.save({fields: ["pregunta", "respuesta"]})
+			.then(function(){
+				res.redirect('/quizes'); // res.redirect: Redirección HTTP a lista de preguntas
+			});
+		}
+	});
 };
