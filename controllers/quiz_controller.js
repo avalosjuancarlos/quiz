@@ -99,3 +99,10 @@ exports.update = function(req, res){
 		} // Redirección HTTP a lista de preguntas (URL relativo)
 	});
 };
+
+// DELETE /quizes/:id
+exports.destroy = function(req, res, next){
+	req.quiz.destroy().then(function(){
+		res.redirect('/quizes');
+	}).catch(function(error){ next(error);});
+};
