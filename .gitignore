@@ -4,3 +4,5 @@ npm-debug.log
 modulo06_P2P_links.md
 quiz.sqlite
 .env
+*.log
+*.sqlite
