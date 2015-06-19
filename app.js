@@ -26,7 +26,30 @@ app.use(bodyParser.urlencoded());
 app.use(cookieParser('Quiz 2015'));
 app.use(session());
 app.use(methodOverride('_method'));
+
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Auto-logout
+app.use(function(req, res, next){
+    var minute = 60 * 1000; // un minuto son 60 segundos, cada segundo tiene 1000 milisegundos.
+    var ttl = 2 * minute; // dos minutos 
+    
+    console.log(req.path);
+    console.dir(req.session);
+    
+    if(req.session && req.session.lastAccess) {
+        var dif = (new Date()).getTime() - req.session.lastAccess;
+        if (dif >= ttl){
+            delete req.session.user;
+        }
+    } else if(req.session) {
+        req.session.lastAccess = (new Date()).getTime();
+    }
+    
+    // Hacer visible req.session en las vistas
+    res.locals.session = req.session;
+    next();
+});
 
 // Helpers dinamicos:
 app.use(function(req, res, next){
