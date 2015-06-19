@@ -42,12 +42,9 @@ app.use(function(req, res, next){
         if (dif >= ttl){
             delete req.session.user;
         }
-    } else if(req.session) {
-        req.session.lastAccess = (new Date()).getTime();
     }
+    req.session.lastAccess = (new Date()).getTime();
     
-    // Hacer visible req.session en las vistas
-    res.locals.session = req.session;
     next();
 });
 
