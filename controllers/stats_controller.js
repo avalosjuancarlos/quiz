@@ -22,7 +22,7 @@ function commentCount(count){
 	that.stats.commentCount = count;
 	
 	// número medio de comentarios por pregunta
-	that.stats.commentProm = count ? Number(that.stats.quizCount / count) : 0;
+	that.stats.commentProm = that.stats.quizCount && count ? Number(count /that.stats.quizCount) : 0;
 	
 	models.Quiz.count({
 		distinct: true,
